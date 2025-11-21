@@ -1,8 +1,9 @@
-import { RiskItem } from "../types";
+import { RiskItem, ImageFilters } from "../types";
 
 export const downloadRedactedImage = (
   imageUrl: string,
   risks: RiskItem[],
+  filters: ImageFilters,
   onSuccess: () => void
 ) => {
   const img = new Image();
@@ -17,8 +18,15 @@ export const downloadRedactedImage = (
     canvas.width = img.naturalWidth;
     canvas.height = img.naturalHeight;
 
+    // Apply filters
+    const filterString = `grayscale(${filters.grayscale}%) sepia(${filters.sepia}%) brightness(${filters.brightness}%) contrast(${filters.contrast}%) blur(${filters.blur}px)`;
+    ctx.filter = filterString;
+
     // Draw original image
     ctx.drawImage(img, 0, 0);
+
+    // Reset filter for redactions (we want solid black/patterns, not filtered)
+    ctx.filter = 'none';
 
     // Draw redactions
     risks.forEach((risk) => {
@@ -35,12 +43,19 @@ export const downloadRedactedImage = (
         ctx.fillStyle = "#000000";
         ctx.fillRect(x, y, w, h);
 
-        // Optional: Add a "REDACTED" label for large enough areas
-        // if (h > 20) {
-        //   ctx.fillStyle = "#333";
-        //   ctx.font = "bold 12px sans-serif";
-        //   ctx.fillText("REDACTED", x + 2, y + h - 5);
-        // }
+        // Draw Custom Text Label if present
+        if (risk.customText) {
+          ctx.fillStyle = "#ffffff";
+          
+          // Calculate dynamic font size based on box height, max 24px, min 10px
+          const fontSize = Math.max(10, Math.min(h * 0.5, 24)); 
+          ctx.font = `bold ${fontSize}px sans-serif`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          
+          // Ensure text fits width-wise approximately
+          ctx.fillText(risk.customText, x + w / 2, y + h / 2, w); 
+        }
       }
     });
 

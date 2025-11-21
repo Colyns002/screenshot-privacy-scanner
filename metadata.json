@@ -1,5 +1,7 @@
 {
   "name": "PrivacyGuard Screenshot Analyzer",
   "description": "Analyze screenshots for hidden privacy risks, PII, and metadata before sharing. Automatically detects and suggests redactions.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [
+    "camera"
+  ]
 }

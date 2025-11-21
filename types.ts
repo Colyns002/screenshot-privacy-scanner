@@ -20,6 +20,7 @@ export interface RiskItem {
   box_2d?: BoundingBox | null; // Normalized 0-1000
   isHidden?: boolean; // If the user chooses to ignore this risk
   isRedacted?: boolean; // If the user has applied redaction
+  customText?: string; // Custom text label for redaction
 }
 
 export interface AnalysisResult {
@@ -27,8 +28,16 @@ export interface AnalysisResult {
   summary: string;
 }
 
+export interface ImageFilters {
+  grayscale: number;
+  sepia: number;
+  brightness: number;
+  contrast: number;
+  blur: number;
+}
+
 export interface AppState {
-  currentStep: 'UPLOAD' | 'ANALYZING' | 'REVIEW';
+  currentStep: 'UPLOAD' | 'CAPTURE' | 'ANALYZING' | 'REVIEW';
   imageUrl: string | null;
   imageBase64: string | null; // For sending to API
   analysisResult: AnalysisResult | null;
